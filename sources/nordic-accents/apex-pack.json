@@ -1,0 +1,19 @@
+{
+  "format": "apex-pack",
+  "manifestVersion": 1,
+  "id": "nordic-accents",
+  "name": "Nordic accents",
+  "version": "1.0.0",
+  "description": "Four calm accent colours for Apex: Fjord, Lingonberry, Moss and Aurora. Pick one in Settings › Appearance.",
+  "author": { "name": "Apex community" },
+  "homepage": "https://github.com/3SENN/apex-packs",
+  "contributes": {
+    "themes": [
+      { "id": "fjord", "name": "Fjord", "accent": "#2f6f9f" },
+      { "id": "lingonberry", "name": "Lingonberry", "accent": "#c2334d" },
+      { "id": "moss", "name": "Moss", "accent": "#5d7f2e" },
+      { "id": "aurora", "name": "Aurora", "accent": "#7b5cd6" }
+    ]
+  },
+  "permissions": {}
+}

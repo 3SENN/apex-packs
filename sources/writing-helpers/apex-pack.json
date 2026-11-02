@@ -1,0 +1,17 @@
+{
+  "format": "apex-pack",
+  "manifestVersion": 1,
+  "id": "writing-helpers",
+  "name": "Writing helpers",
+  "version": "1.0.0",
+  "description": "Skills to tighten a draft, turn rough notes into meeting notes and run a weekly review, with a Friday routine for the review.",
+  "author": { "name": "Apex community" },
+  "homepage": "https://github.com/3SENN/apex-packs",
+  "contributes": {
+    "skills": ["skills/tighten", "skills/meeting-notes", "skills/weekly-review"],
+    "routines": [
+      { "id": "weekly-review", "name": "Friday weekly review", "prompt": "/weekly-review", "schedule": { "kind": "daily", "time": "16:00", "days": [5] } }
+    ]
+  },
+  "permissions": {}
+}

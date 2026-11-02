@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Countdowns</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+<main>
+  <h1>Countdowns</h1>
+  <form id="add">
+    <label for="name">What</label>
+    <input id="name" required maxlength="60" autocomplete="off" placeholder="Holiday">
+    <label for="date">When</label>
+    <input id="date" type="date" required>
+    <button type="submit">Add</button>
+  </form>
+  <p id="status" role="status"></p>
+  <ul id="list" aria-label="Your countdowns"></ul>
+</main>
+<script type="module" src="panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "format": "apex-pack-index",
+  "name": "Apex community",
+  "packs": [
+    {
+      "id": "calm-wikipedia",
+      "name": "Calm Wikipedia",
+      "description": "Easier reading on Wikipedia: a narrower text column, more space between lines and no fundraising banners.",
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/calm-wikipedia-1.0.0.apexpack",
+      "sha256": "fb02c59a368d713e009421575c13490c8a095e1729e4f3d0878a542f57a0a9ef",
+      "author": "Apex community"
+    },
+    {
+      "id": "countdowns",
+      "name": "Countdowns",
+      "description": "Count down to the days that matter. Add dates in the sidebar panel, and the next ones show on your new tab page.",
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/countdowns-1.0.0.apexpack",
+      "sha256": "56e9bd1b1e7ea44dafd567dfd4685383c79610983a7ae920973b9ccfc88e5c19",
+      "author": "Apex community"
+    },
+    {
+      "id": "nordic-accents",
+      "name": "Nordic accents",
+      "description": "Four calm accent colours for Apex: Fjord, Lingonberry, Moss and Aurora. Pick one in Settings › Appearance.",
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/nordic-accents-1.0.0.apexpack",
+      "sha256": "74e8cc9b7069acfb2af79d1de24830206cffadd5f416b1b227001cea59c5aca8",
+      "author": "Apex community"
+    },
+    {
+      "id": "writing-helpers",
+      "name": "Writing helpers",
+      "description": "Skills to tighten a draft, turn rough notes into meeting notes and run a weekly review, with a Friday routine for the review.",
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/writing-helpers-1.0.0.apexpack",
+      "sha256": "8163fdb25dea55c5fece138fdf6a75a8d72aee375ff7d23076dd6a6e7666ed4b",
+      "author": "Apex community"
+    }
+  ]
+}

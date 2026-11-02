@@ -1,0 +1,12 @@
+/* Calmer reading on Wikipedia: a narrower column, more space between lines, no banners. */
+.mw-body-content p,
+.mw-body-content li {
+  max-width: 72ch;
+  line-height: 1.7 !important;
+}
+
+#centralNotice,
+.cn-fundraising,
+.frb {
+  display: none !important;
+}

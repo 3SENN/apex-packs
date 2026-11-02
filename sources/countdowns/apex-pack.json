@@ -1,0 +1,16 @@
+{
+  "format": "apex-pack",
+  "manifestVersion": 1,
+  "id": "countdowns",
+  "name": "Countdowns",
+  "version": "1.0.0",
+  "description": "Count down to the days that matter. Add dates in the sidebar panel, and the next ones show on your new tab page.",
+  "author": { "name": "Apex community" },
+  "homepage": "https://github.com/3SENN/apex-packs",
+  "contributes": {
+    "panels": [{ "id": "main", "title": "Countdowns", "html": "panel/index.html", "sidebar": true, "icon": "icon.svg" }],
+    "cards": [{ "id": "next", "title": "Coming up", "module": "cards/next.js", "open": "panel:main" }],
+    "commands": [{ "id": "open", "title": "Open countdowns", "run": "panel:main" }]
+  },
+  "permissions": {}
+}

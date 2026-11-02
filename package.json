@@ -1,0 +1,14 @@
+{
+  "name": "apex-packs",
+  "private": true,
+  "type": "module",
+  "description": "The Apex community pack index.",
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "index": "node scripts/build-index.mjs",
+    "unpack": "node scripts/unpack.mjs"
+  },
+  "devDependencies": {
+    "fflate": "0.8.3"
+  }
+}
