@@ -1,0 +1,6 @@
+# Every change is reviewed by a maintainer. keys.json, the checks and CI are
+# the index's trust: changes there are read line by line.
+*                @3SENN
+/keys.json       @3SENN
+/scripts/        @3SENN
+/.github/        @3SENN

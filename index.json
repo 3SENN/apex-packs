@@ -9,7 +9,11 @@
       "version": "1.0.0",
       "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/calm-wikipedia-1.0.0.apexpack",
       "sha256": "fb02c59a368d713e009421575c13490c8a095e1729e4f3d0878a542f57a0a9ef",
-      "author": "Apex community"
+      "author": "Apex community",
+      "kind": "pack",
+      "size": 1135,
+      "category": "learning",
+      "color": "#4f6d8f"
     },
     {
       "id": "countdowns",
@@ -18,7 +22,11 @@
       "version": "1.0.0",
       "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/countdowns-1.0.0.apexpack",
       "sha256": "56e9bd1b1e7ea44dafd567dfd4685383c79610983a7ae920973b9ccfc88e5c19",
-      "author": "Apex community"
+      "author": "Apex community",
+      "kind": "pack",
+      "size": 4202,
+      "category": "productivity",
+      "color": "#e0703a"
     },
     {
       "id": "nordic-accents",
@@ -27,7 +35,11 @@
       "version": "1.0.0",
       "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/nordic-accents-1.0.0.apexpack",
       "sha256": "74e8cc9b7069acfb2af79d1de24830206cffadd5f416b1b227001cea59c5aca8",
-      "author": "Apex community"
+      "author": "Apex community",
+      "kind": "pack",
+      "size": 882,
+      "category": "creative",
+      "color": "#2f7f86"
     },
     {
       "id": "writing-helpers",
@@ -36,7 +48,11 @@
       "version": "1.0.0",
       "url": "https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/writing-helpers-1.0.0.apexpack",
       "sha256": "8163fdb25dea55c5fece138fdf6a75a8d72aee375ff7d23076dd6a6e7666ed4b",
-      "author": "Apex community"
+      "author": "Apex community",
+      "kind": "pack",
+      "size": 2289,
+      "category": "productivity",
+      "color": "#6a4bff"
     }
   ]
 }

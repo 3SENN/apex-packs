@@ -4,6 +4,10 @@ on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    # Every Monday: are the apps hosted elsewhere still there, byte for byte?
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,10 +15,20 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The base branch is needed to see whether a pull request changes a pinned key.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
-      - run: npm ci
-      - run: npm run check
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - name: Check the index
+        run: npm run check
+        env:
+          BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event_name == 'push' && github.event.before || '' }}
+          CHECK_EXTERNAL: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'all' || 'changed' }}
