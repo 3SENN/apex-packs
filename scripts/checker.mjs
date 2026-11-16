@@ -79,7 +79,7 @@ export async function checkIndex({ dir = '.', base = null, external = 'changed',
   if (!index) return { problems, notes, count: 0 }
   if (readFileSync(join(dir, 'index.json')).length > limits.index.bytes) fail('index.json', `is larger than ${mb(limits.index.bytes)}`)
   if (index.format !== 'apex-pack-index' || !Array.isArray(index.packs)) fail('index.json', 'needs "format": "apex-pack-index" and a "packs" list')
-  if (typeof index.name !== 'string' || !index.name.trim()) fail('index.json', 'needs a "name"')
+  if (typeof index.name !== 'string' || !index.name.trim() || index.name.length > limits.index.name) fail('index.json', `needs a "name" of 1 to ${limits.index.name} characters`)
   const packs = Array.isArray(index.packs) ? index.packs : []
   if (packs.length > limits.index.entries) fail('index.json', `lists more than ${limits.index.entries} packs`)
 

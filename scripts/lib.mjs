@@ -28,7 +28,7 @@ export const LIMITS = {
   /** Bigger archives are hosted elsewhere (a release asset) and listed by address and hash. */
   inRepoBytes: 20 * MiB,
   imageBytes: 4 * MiB,
-  index: { bytes: 2 * MiB, entries: 2_000, name: 80, description: 500, author: 80, reason: 500 },
+  index: { bytes: 2 * MiB, entries: 2_000, name: 80, description: 500, author: 80, reason: 300 },
 }
 
 export const ID = /^[a-z0-9][a-z0-9-]{1,31}$/
