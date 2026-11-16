@@ -11,6 +11,17 @@ A pack can hold skills, routine templates, site boosts, accent colours,
 companions, connectors, apps and panels, and new commands and tools for the
 companion.
 
+| Repository | For |
+|---|---|
+| **apex-packs** (this one) | The index: finished packs, signed and reviewed in the open. Every copy of Apex reads it, so it changes only when a pack is added or updated. |
+| [apex-apps](https://github.com/3SENN/apex-apps) | Building packs by hand: guides, working examples, the packing tools, and [how Apex fits together](https://github.com/3SENN/apex-apps/blob/main/docs/how-it-works.md). |
+
+**What the index takes:** packs (`.apexpack`), apps and games (`.apexapp`)
+and worlds (`.apexworld`). Each sits on a shelf in Browse (games, tools,
+worlds, creative, learning, productivity, companions or other), with its own
+colour and picture. Archives up to 20 MB live in this repository; a bigger
+app is hosted as a release asset and listed by its address and hash.
+
 ## In the index today
 
 The index is young. These are the packs in it so far, each reviewed in the
@@ -39,29 +50,60 @@ https://raw.githubusercontent.com/3SENN/apex-packs/main/index.json
 
 ## Share what you made
 
-1. Make the pack in Apex: describe it on **Packs › New pack** and a companion
-   builds it with you, or use **Share as pack** on a skill, boost, app or
-   companion you already have. Test it, then choose **Export…** on its draft.
-   Apex signs the file with your own author key.
-2. Fork this repository and put the file in `packs/` as
-   `<id>-<version>.apexpack`.
-3. Unpack it so reviewers can read it, and rebuild the index:
+1. **Make it and sign it.** In Apex, describe it on **Packs › New pack** and a
+   companion builds it with you, or use **Share as pack** on a skill, boost,
+   app or companion you already have; then choose **Export…** on its draft.
+   Apex signs the file with your own author key. Built it by hand? Sign it
+   with [`tools/pack.mjs`](https://github.com/3SENN/apex-apps/tree/main/tools)
+   from apex-apps.
+2. **Add the file.** Fork this repository and put it in `packs/` as
+   `<id>-<version>.apexpack`, `.apexapp` or `.apexworld`. A picture for its
+   card goes beside it as `<id>-<version>.png` (PNG, up to 4 MB; Share… in
+   Apex saves one).
+3. **Unpack it and rebuild the index**, so reviewers can read every file:
    ```
    npm install
-   npm run unpack -- packs/<id>-<version>.apexpack
+   npm run unpack -- packs/<id>-<version>.apexapp
    npm run index
+   ```
+4. **Put it on a shelf.** In `index.json`, give your entry a `category`
+   (`games`, `tools`, `worlds`, `creative`, `learning`, `productivity`,
+   `companions` or `other`) and, if you like, a `color` (`#rrggbb`) for its
+   card. `npm run index` keeps both from then on.
+5. **Check it and open a pull request.**
+   ```
    npm run check
    ```
-4. A new pack also adds its author key to `keys.json` (`npm run check` tells
-   you the line to add). Open a pull request.
+   A new pack also adds its key's pin to `keys.json`: `npm run check` prints
+   the exact line.
 
-To update your pack, replace its file with the new version (one version per
-pack), unpack it again and rebuild the index. Updates must be signed with the
-key `keys.json` pins for that pack, and Apex on people's computers refuses a
-pack signed by anyone else.
+**An app bigger than 20 MB** is hosted as a release asset in a repository of
+your own, at an address whose bytes never change. Unpack your local copy with
+`npm run unpack -- <file>`, and add its entry to `index.json` by hand:
+`node tools/pack.mjs … --entry <address>` in apex-apps prints it. CI downloads
+it, checks it like any other, and checks again every week that it is still
+there, unchanged.
 
-Building an app, a game or a world by hand? [apex-apps](https://github.com/3SENN/apex-apps)
-has the guides, working examples and packing tools.
+**A bundled app** (a build tool's output) can't be read line by line, so its
+manifest's `homepage` points at its source code, and `sources/<id>/` lists
+its built files by hash in `__apex/built.txt` instead of copying them.
+
+**To update**, replace the file with the new version (one version per pack),
+unpack it again and rebuild the index. Updates must be signed with the key
+`keys.json` pins for that pack: Apex on people's computers refuses a pack
+signed by anyone else.
+
+Building by hand? [apex-apps](https://github.com/3SENN/apex-apps) has the
+guides, working examples and packing tools.
+
+### Sharing a companion
+
+In Apex, open Settings › Companions, choose **Share as pack…** on the
+companion's menu, then **Export…** on the draft, and send it in like any
+other pack. A pack never carries a companion's memory.
+
+Don't send a `.apexcompanion` file here. That file is for handing a companion
+to someone you know: it isn't signed, and it can carry memory.
 
 ## What reviewers check
 
@@ -69,27 +111,61 @@ has the guides, working examples and packing tools.
 - It asks for the least it needs. Reading sites together with sending data to
   hosts is called out as serious in Apex; it needs a clear reason.
 - Its code is readable: no minified or obfuscated code, no hidden behaviour.
+  A bundled app's source at its `homepage` matches what it does.
 - Its skills and tool descriptions tell the companion only what the pack is
   for.
+- A companion's standing instructions, skills and routines describe that
+  companion and what it helps with, and nothing else. They become
+  instructions in the person's own chats, so they are read like code.
+- Boosts change only how the listed sites look, unless a script there has a
+  clear reason.
 - Its name and description say what it does in plain words, for the person
   installing it.
 - No secrets, tracking or advertising.
 
-`npm run check` (and CI on every pull request) checks the index, the
-signatures and their pinned keys, the hashes, the file rules Apex applies, and
-that `sources/` matches each pack exactly. Apex checks every pack again when
+`npm run check` runs in CI on every pull request, on every push to `main`
+and once a week. It checks:
+
+- every entry: its fields, shelf, size, hash and picture, and that it matches
+  the manifest inside;
+- every signature, against the key `keys.json` pins for that pack;
+- that no pin changed or went away;
+- the file rules Apex applies: safe paths, size limits, readable code outside
+  a bundled app, no `.env` files and nothing shaped like a key;
+- that `sources/` matches each archive exactly;
+- apps hosted elsewhere, downloaded and checked the same way.
+
+`npm test` covers the checks themselves. Apex checks every pack again when
 someone installs it.
 
 ## Something wrong with a pack?
 
-Open an issue with the pack's id and what you saw. Maintainers can remove a
-pack from the index; people who already installed it can turn it off or remove
-it on **Packs** in Apex.
+Open an issue with the pack's id and what you saw. If a pack could harm the
+people who install it (it sends data where it shouldn't, or steers the
+companion), don't open a public issue: report it privately as
+[SECURITY.md](SECURITY.md) explains.
+
+Maintainers can withdraw a pack from the index. Apex then stops offering it
+and its updates, and shows people who installed it a notice with the reason.
+They can turn it off or remove it on **Packs** in Apex.
 
 ## Keys
 
+`keys.json` pins each pack id to the full fingerprint of the key that signs
+it (the SHA-256 of its public key, the value Apex pins on people's computers).
+A pin is added once and never changes or goes away, not even after the pack is
+withdrawn, so no one can take over an id. Lost your key? Publish under a new
+id.
+
 The starter packs are signed by the index's maintainer key `2fe8126572ba8315`.
-Every other pack is signed by its author's own key, pinned in `keys.json`.
+Every other pack is signed by its author's own key.
+
+## Licence
+
+The scripts and the starter packs are [MIT](LICENSE). A pack you add is shared
+under MIT too, unless it holds its own `LICENSE` file that says otherwise.
+Opening a pull request confirms that everything in it is yours to share that
+way: your own work, or assets licensed for it with their credits.
 
 ---
 

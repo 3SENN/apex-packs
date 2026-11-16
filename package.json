@@ -3,10 +3,15 @@
   "private": true,
   "type": "module",
   "description": "The Apex community pack index.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "check": "node scripts/check.mjs",
     "index": "node scripts/build-index.mjs",
-    "unpack": "node scripts/unpack.mjs"
+    "unpack": "node scripts/unpack.mjs",
+    "test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
     "fflate": "0.8.3"
