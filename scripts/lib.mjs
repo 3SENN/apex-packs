@@ -1,6 +1,6 @@
 // Shared by the checker, the index builder and the unpacker. It reads an
-// archive the way Apex does and holds the rules Apex applies when someone
-// installs one (docs/packs.md and docs/apps.md in the Apex repository), so a
+// archive the way Atelier does and holds the rules Atelier applies when someone
+// installs one (docs/packs.md and docs/apps.md in the Atelier repository), so a
 // pack that passes here installs there.
 import { createHash, createPublicKey, verify } from 'node:crypto'
 import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs'
@@ -8,11 +8,11 @@ import { join, relative, sep } from 'node:path'
 import { unzipSync } from 'fflate'
 
 /** Where archives in this repository are served from. */
-export const BASE = 'https://raw.githubusercontent.com/3SENN/apex-packs/main/packs/'
+export const BASE = 'https://raw.githubusercontent.com/3SENN/atelier-packs/main/packs/'
 
 /** The three faces of one format: the bytes are the same signed zip, the extension picks the icon and the review. */
-export const EXTENSIONS = { pack: '.apexpack', app: '.apexapp', world: '.apexworld' }
-export const ARCHIVE = /\.(apexpack|apexapp|apexworld)$/
+export const EXTENSIONS = { pack: '.atelierpack', app: '.atelierapp', world: '.atelierworld' }
+export const ARCHIVE = /\.(atelierpack|atelierapp|atelierworld)$/
 export const CATEGORIES = ['games', 'tools', 'worlds', 'creative', 'learning', 'productivity', 'companions', 'other']
 
 const MiB = 1024 * 1024
@@ -35,11 +35,11 @@ export const ID = /^[a-z0-9][a-z0-9-]{1,31}$/
 export const VERSION = /^(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})$/
 export const COLOR = /^#[0-9a-f]{6}$/i
 export const FINGERPRINT = /^[0-9a-f]{64}$/
-export const SIGNATURE_FILE = '__apex/signature.json'
+export const SIGNATURE_FILE = '__atelier/signature.json'
 /** What Share… adds beside the signed files: a note and a picture, never part of the hash. */
-const SHARE_FILES = new Set(['__apex/share.json', '__apex/share.png'])
+const SHARE_FILES = new Set(['__atelier/share.json', '__atelier/share.png'])
 /** Where the unpacker lists a bundled app's built files instead of copying them. */
-export const BUILT_FILE = '__apex/built.txt'
+export const BUILT_FILE = '__atelier/built.txt'
 
 export const sha256 = (data) => createHash('sha256').update(data).digest('hex')
 
@@ -53,13 +53,13 @@ const WINDOWS_DEVICE = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$/i
 export function isPackPath(p) {
   if (typeof p !== 'string' || !p || p.length > 300) return false
   const parts = p.split('/')
-  return parts[0] !== '__apex' && parts.every((s) => SEGMENT.test(s) && !/^\.+$/.test(s))
+  return parts[0] !== '__atelier' && parts.every((s) => SEGMENT.test(s) && !/^\.+$/.test(s))
 }
 
 function isAssetPath(p) {
   if (typeof p !== 'string' || !p || p.length > 400) return false
   const parts = p.split('/')
-  if (parts[0] === '__apex') return false
+  if (parts[0] === '__atelier') return false
   return parts.every((s) => ASSET_SEGMENT.test(s) && !/^\.+$/.test(s) && s.trim() === s && !s.endsWith('.') && !WINDOWS_DEVICE.test(s))
 }
 
@@ -91,7 +91,7 @@ export function isBig(m) {
   return appsOf(m).length > 0 || list(m?.contributes?.assets).length > 0
 }
 
-/** app, world or pack, worked out the way Apex's own tools work it out. */
+/** app, world or pack, worked out the way Atelier's own tools work it out. */
 export function kindOf(m) {
   const c = m?.contributes ?? {}
   if (appsOf(m).length > 0) return 'app'
@@ -101,7 +101,7 @@ export function kindOf(m) {
 
 // ---- archives and folders ----
 
-/** An archive's files (without Apex's own), its manifest and its signature. Throws on what Apex would refuse to open. */
+/** An archive's files (without Atelier's own), its manifest and its signature. Throws on what Atelier would refuse to open. */
 export function readArchive(buffer) {
   const raw = unzipSync(new Uint8Array(buffer))
   const entries = new Map()
@@ -114,9 +114,9 @@ export function readArchive(buffer) {
     }
     entries.set(name, Buffer.from(data))
   }
-  const manifestFile = entries.get('apex-pack.json')
-  if (!manifestFile) throw new Error('it has no apex-pack.json at its root')
-  if (manifestFile.length > LIMITS.manifestBytes) throw new Error('apex-pack.json is larger than 64 KB')
+  const manifestFile = entries.get('atelier-pack.json')
+  if (!manifestFile) throw new Error('it has no atelier-pack.json at its root')
+  if (manifestFile.length > LIMITS.manifestBytes) throw new Error('atelier-pack.json is larger than 64 KB')
   const manifest = JSON.parse(manifestFile.toString('utf8'))
   const roots = assetRoots(manifest)
   for (const name of entries.keys()) if (!isPackFilePath(name, roots)) throw new Error(`${name} is not an allowed file path`)
@@ -140,7 +140,7 @@ export function readFolder(root) {
   return files
 }
 
-/** The SHA-256 of each file a pack's sources stand for: the files themselves, and the built files listed in __apex/built.txt. */
+/** The SHA-256 of each file a pack's sources stand for: the files themselves, and the built files listed in __atelier/built.txt. */
 export function sourceHashes(root) {
   const files = readFolder(root)
   const hashes = new Map()
@@ -160,7 +160,7 @@ export function builtListing(files) {
   return [...files.keys()].sort().map((p) => `${sha256(files.get(p))}  ${p}`).join('\n') + '\n'
 }
 
-/** The content hash Apex signs: SHA-256 over the sorted "path NUL sha256(file)" lines. */
+/** The content hash Atelier signs: SHA-256 over the sorted "path NUL sha256(file)" lines. */
 export function hashOfHashes(hashes) {
   return sha256([...hashes.keys()].sort().map((p) => `${p}\u0000${hashes.get(p)}\n`).join(''))
 }
@@ -173,11 +173,11 @@ export function packHash(files) {
 
 /**
  * The full fingerprint of the key that signed this hash (SHA-256 of its public
- * key, the value Apex pins on first install), or null when the signature is
+ * key, the value Atelier pins on first install), or null when the signature is
  * missing, malformed or doesn't match.
  */
 export function signerOf(hash, s) {
-  if (!s || s.format !== 'apex-pack-signature' || s.version !== 1 || s.hash !== hash) return null
+  if (!s || s.format !== 'atelier-pack-signature' || s.version !== 1 || s.hash !== hash) return null
   try {
     const der = Buffer.from(s.publicKey, 'base64')
     const fingerprint = sha256(der)
@@ -189,7 +189,7 @@ export function signerOf(hash, s) {
   }
 }
 
-// ---- keys that must never ship in a pack (the same list Apex refuses on export) ----
+// ---- keys that must never ship in a pack (the same list Atelier refuses on export) ----
 
 const KEY_PATTERNS = [
   { re: /sk-ant-[A-Za-z0-9_-]{20,}/, what: 'an Anthropic API key' },

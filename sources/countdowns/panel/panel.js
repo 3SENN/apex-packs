@@ -9,11 +9,11 @@ const nameInput = document.getElementById('name')
 const dateInput = document.getElementById('date')
 
 async function load() {
-  return (await apex.storage.get('events')) ?? []
+  return (await atelier.storage.get('events')) ?? []
 }
 
 async function save(events) {
-  await apex.storage.set('events', events)
+  await atelier.storage.set('events', events)
 }
 
 function label(days) {
