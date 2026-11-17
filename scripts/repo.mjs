@@ -43,7 +43,7 @@ export function buildIndex(dir = '.') {
   }
   for (const p of old.packs ?? []) if (!packs.some((q) => q.id === p.id) && typeof p.url === 'string' && !p.url.startsWith(BASE)) packs.push(p)
   packs.sort((a, b) => a.id.localeCompare(b.id))
-  const index = { format: 'apex-pack-index', name: old.name ?? 'Apex community', packs, ...(old.withdrawn?.length ? { withdrawn: old.withdrawn } : {}) }
+  const index = { format: 'atelier-pack-index', name: old.name ?? 'Atelier community', packs, ...(old.withdrawn?.length ? { withdrawn: old.withdrawn } : {}) }
   writeFileSync(path, `${JSON.stringify(index, null, 2)}\n`)
   const shelfless = packs.filter((p) => !p.category).map((p) => p.id)
   if (shelfless.length) warnings.push(`give ${shelfless.join(', ')} a "category" in index.json (games, tools, worlds, creative, learning, productivity, companions or other)`)
@@ -52,7 +52,7 @@ export function buildIndex(dir = '.') {
 
 /**
  * Writes an archive's files into sources/<id>/ so reviewers can read them on
- * GitHub. A bundled app's build output is listed by hash in __apex/built.txt
+ * GitHub. A bundled app's build output is listed by hash in __atelier/built.txt
  * instead: its readable source is at the manifest's homepage.
  */
 export function unpack(data, dir = '.') {

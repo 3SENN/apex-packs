@@ -18,36 +18,36 @@ function newKey() {
   return { privateKey, der, fingerprint: sha256(der) }
 }
 
-/** A signed archive of these files, the way Apex and pack.mjs write one. */
+/** A signed archive of these files, the way Atelier and pack.mjs write one. */
 function archive(files, key) {
   const map = new Map(Object.entries(files).map(([p, d]) => [p, Buffer.from(typeof d === 'string' ? d : JSON.stringify(d))]))
   const hash = packHash(map)
   const entries = Object.fromEntries([...map].map(([p, d]) => [p, new Uint8Array(d)]))
   if (key) {
-    const signature = { format: 'apex-pack-signature', version: 1, hash, keyId: key.fingerprint.slice(0, 16), publicKey: key.der.toString('base64'), signature: sign(null, Buffer.from(hash, 'utf8'), key.privateKey).toString('base64') }
-    entries['__apex/signature.json'] = new Uint8Array(Buffer.from(JSON.stringify(signature)))
+    const signature = { format: 'atelier-pack-signature', version: 1, hash, keyId: key.fingerprint.slice(0, 16), publicKey: key.der.toString('base64'), signature: sign(null, Buffer.from(hash, 'utf8'), key.privateKey).toString('base64') }
+    entries['__atelier/signature.json'] = new Uint8Array(Buffer.from(JSON.stringify(signature)))
   }
   return Buffer.from(zipSync(entries))
 }
 
-const manifest = (id, more = {}) => ({ format: 'apex-pack', manifestVersion: 2, id, name: `Pack ${id}`, version: '1.0.0', description: `What ${id} does.`, author: { name: 'Someone' }, contributes: {}, permissions: {}, ...more })
-const skillPack = (id) => ({ 'apex-pack.json': manifest(id, { contributes: { skills: ['skills/hello'] } }), 'skills/hello/SKILL.md': '---\nname: hello\ndescription: Says hello.\n---\nSay hello.\n' })
-const appPack = (id, app = {}, more = {}) => ({ 'apex-pack.json': manifest(id, { contributes: { apps: [{ id: 'main', name: 'Main', build: 'kit', kind: 'game', ...app }] }, ...more }), 'app/index.html': '<!doctype html><script type="module" src="./main.js"></script>', 'app/main.js': 'console.log("hi")\n' })
+const manifest = (id, more = {}) => ({ format: 'atelier-pack', manifestVersion: 2, id, name: `Pack ${id}`, version: '1.0.0', description: `What ${id} does.`, author: { name: 'Someone' }, contributes: {}, permissions: {}, ...more })
+const skillPack = (id) => ({ 'atelier-pack.json': manifest(id, { contributes: { skills: ['skills/hello'] } }), 'skills/hello/SKILL.md': '---\nname: hello\ndescription: Says hello.\n---\nSay hello.\n' })
+const appPack = (id, app = {}, more = {}) => ({ 'atelier-pack.json': manifest(id, { contributes: { apps: [{ id: 'main', name: 'Main', build: 'kit', kind: 'game', ...app }] }, ...more }), 'app/index.html': '<!doctype html><script type="module" src="./main.js"></script>', 'app/main.js': 'console.log("hi")\n' })
 
 /** A repository with these archives in packs/, unpacked, indexed and pinned like a contributor would leave it. */
 function repo(items, { category = 'tools' } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'apex-packs-'))
+  const dir = mkdtempSync(join(tmpdir(), 'atelier-packs-'))
   mkdirSync(join(dir, 'packs'))
   mkdirSync(join(dir, 'sources'))
   const keys = {}
-  for (const { files, key, ext = '.apexpack', pin = true } of items) {
-    const m = files['apex-pack.json']
+  for (const { files, key, ext = '.atelierpack', pin = true } of items) {
+    const m = files['atelier-pack.json']
     const data = archive(files, key)
     writeFileSync(join(dir, 'packs', `${m.id}-${m.version}${ext}`), data)
     unpack(data, dir)
     if (key && pin) keys[m.id] = key.fingerprint
   }
-  writeFileSync(join(dir, 'index.json'), JSON.stringify({ format: 'apex-pack-index', name: 'Test', packs: [] }))
+  writeFileSync(join(dir, 'index.json'), JSON.stringify({ format: 'atelier-pack-index', name: 'Test', packs: [] }))
   buildIndex(dir)
   const index = JSON.parse(readJson(dir, 'index.json'))
   for (const p of index.packs) p.category = category
@@ -109,18 +109,18 @@ test('an app may name its assets the way games do, and only inside its folder', 
   const key = newKey()
   const ok = appPack('game')
   ok['app/sounds/bangers & mash (1).ogg'] = 'ogg'
-  assert.deepEqual(await problems(repo([{ files: ok, key, ext: '.apexapp' }]).dir), [])
+  assert.deepEqual(await problems(repo([{ files: ok, key, ext: '.atelierapp' }]).dir), [])
   const bad = appPack('game2')
   bad['notes/a b.md'] = 'text'
-  assert.throws(() => repo([{ files: bad, key, ext: '.apexapp' }]), /not an allowed file path/)
+  assert.throws(() => repo([{ files: bad, key, ext: '.atelierapp' }]), /not an allowed file path/)
 })
 
 test('an archive must carry the extension of what it holds', async () => {
   const key = newKey()
-  const { dir } = repo([{ files: appPack('game'), key, ext: '.apexpack' }])
+  const { dir } = repo([{ files: appPack('game'), key, ext: '.atelierpack' }])
   const p = (await problems(dir)).join('\n')
-  assert.match(p, /packs\/game-1\.0\.0\.apexapp is missing/)
-  assert.match(p, /packs\/game-1\.0\.0\.apexpack: is not in index\.json/)
+  assert.match(p, /packs\/game-1\.0\.0\.atelierapp is missing/)
+  assert.match(p, /packs\/game-1\.0\.0\.atelierpack: is not in index\.json/)
 })
 
 test('a bundled app: built code may be minified, its build is listed by hash, and it names its source', async () => {
@@ -128,16 +128,16 @@ test('a bundled app: built code may be minified, its build is listed by hash, an
   const min = `var a=${'1+'.repeat(2_000)}1;\n`
   const withHome = appPack('built', { build: 'bundled' }, { homepage: 'https://example.com/built' })
   withHome['app/main.js'] = min
-  const { dir } = repo([{ files: withHome, key, ext: '.apexapp' }])
+  const { dir } = repo([{ files: withHome, key, ext: '.atelierapp' }])
   assert.deepEqual(await problems(dir), [])
-  assert.match(readFileSync(join(dir, 'sources', 'built', '__apex', 'built.txt'), 'utf8'), /^[0-9a-f]{64} {2}app\/index\.html$/m)
+  assert.match(readFileSync(join(dir, 'sources', 'built', '__atelier', 'built.txt'), 'utf8'), /^[0-9a-f]{64} {2}app\/index\.html$/m)
 
   const noHome = appPack('built2', { build: 'bundled' })
-  assert.match((await problems(repo([{ files: noHome, key, ext: '.apexapp' }]).dir)).join('\n'), /needs a "homepage"/)
+  assert.match((await problems(repo([{ files: noHome, key, ext: '.atelierapp' }]).dir)).join('\n'), /needs a "homepage"/)
 
   const kit = appPack('kitapp')
   kit['app/main.js'] = min
-  assert.match((await problems(repo([{ files: kit, key, ext: '.apexapp' }]).dir)).join('\n'), /looks minified/)
+  assert.match((await problems(repo([{ files: kit, key, ext: '.atelierapp' }]).dir)).join('\n'), /looks minified/)
 })
 
 test('keys are refused and public browser keys are not', async () => {
@@ -182,7 +182,7 @@ test('a picture beside the archive becomes its image, and must be a PNG', async 
 })
 
 test('an archive too big for the repository must be hosted elsewhere', async () => {
-  const { dir } = repo([{ files: appPack('game'), key: newKey(), ext: '.apexapp' }])
+  const { dir } = repo([{ files: appPack('game'), key: newKey(), ext: '.atelierapp' }])
   assert.match((await problems(dir, { limits: { ...LIMITS, inRepoBytes: 100 } })).join('\n'), /Host it as a release asset/)
 })
 
@@ -192,7 +192,7 @@ test('an app hosted elsewhere is downloaded when it is new or changed, and must 
   const { dir } = repo([{ files: skillPack('near'), key }])
   unpack(data, dir)
   const index = JSON.parse(readJson(dir, 'index.json'))
-  const entry = { id: 'far', name: 'Pack far', description: 'What far does.', version: '1.0.0', url: 'https://downloads.example.com/far-1.0.0.apexapp', sha256: sha256(data), author: 'Someone', kind: 'app', size: data.length, category: 'games' }
+  const entry = { id: 'far', name: 'Pack far', description: 'What far does.', version: '1.0.0', url: 'https://downloads.example.com/far-1.0.0.atelierapp', sha256: sha256(data), author: 'Someone', kind: 'app', size: data.length, category: 'games' }
   index.packs.push(entry)
   write(dir, 'index.json', index)
   write(dir, 'keys.json', { near: key.fingerprint, far: key.fingerprint })

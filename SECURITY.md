@@ -23,6 +23,6 @@ through, or a way to change a pack's pinned key.
 ## What happens next
 
 A maintainer replies in the report. A pack that harms people is withdrawn
-from the index: Apex stops offering it and its updates, and shows everyone who
-installed it a notice with the reason. Apex never deletes it from their
+from the index: Atelier stops offering it and its updates, and shows everyone who
+installed it a notice with the reason. Atelier never deletes it from their
 computer; they turn it off or remove it on **Packs**.

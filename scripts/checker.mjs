@@ -6,13 +6,13 @@
 //     the manifest inside;
 //   - each archive is signed, and by the key keys.json pins for its id; a pin,
 //     once merged, never changes and never goes away;
-//   - each archive follows Apex's file rules: safe paths, size limits, readable
+//   - each archive follows Atelier's file rules: safe paths, size limits, readable
 //     code outside a bundled app, no .env files and nothing shaped like a key;
 //   - sources/<id>/ holds exactly the archive's files, so reviewers read what
 //     people install (a bundled app's build output is listed by hash instead);
 //   - apps too big for this repository are downloaded from where they are
 //     hosted and checked the same way.
-// Apex runs its own full validation again when someone installs a pack.
+// Atelier runs its own full validation again when someone installs a pack.
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import {
@@ -78,7 +78,7 @@ export async function checkIndex({ dir = '.', base = null, external = 'changed',
   const keys = json('keys.json') ?? {}
   if (!index) return { problems, notes, count: 0 }
   if (readFileSync(join(dir, 'index.json')).length > limits.index.bytes) fail('index.json', `is larger than ${mb(limits.index.bytes)}`)
-  if (index.format !== 'apex-pack-index' || !Array.isArray(index.packs)) fail('index.json', 'needs "format": "apex-pack-index" and a "packs" list')
+  if (index.format !== 'atelier-pack-index' || !Array.isArray(index.packs)) fail('index.json', 'needs "format": "atelier-pack-index" and a "packs" list')
   if (typeof index.name !== 'string' || !index.name.trim() || index.name.length > limits.index.name) fail('index.json', `needs a "name" of 1 to ${limits.index.name} characters`)
   const packs = Array.isArray(index.packs) ? index.packs : []
   if (packs.length > limits.index.entries) fail('index.json', `lists more than ${limits.index.entries} packs`)
@@ -93,7 +93,7 @@ export async function checkIndex({ dir = '.', base = null, external = 'changed',
       const now = keys[id]
       if (now === undefined) fail(`keys.json › ${id}`, 'was removed. A pin stays for good, even after its pack leaves the index, so the id can never move to another key.')
       else if (now !== was && !(typeof was === 'string' && was.length === 16 && typeof now === 'string' && now.startsWith(was)))
-        fail(`keys.json › ${id}`, `changed from ${String(was).slice(0, 16)} to ${String(now).slice(0, 16)}. A pin never changes: Apex on people's computers refuses updates signed by another key anyway. Publish under a new id instead.`)
+        fail(`keys.json › ${id}`, `changed from ${String(was).slice(0, 16)} to ${String(now).slice(0, 16)}. A pin never changes: Atelier on people's computers refuses updates signed by another key anyway. Publish under a new id instead.`)
     }
   } else {
     notes.push('no earlier keys.json to compare with, so pin changes were not checked')
@@ -134,7 +134,7 @@ export async function checkIndex({ dir = '.', base = null, external = 'changed',
     if (!/^[0-9a-f]{64}$/.test(entry.sha256 ?? '')) fail(where, 'sha256 must be 64 hex characters (run npm run index)')
     if (!Number.isInteger(entry.size) || entry.size <= 0) fail(where, "size must be the archive's size in bytes (run npm run index)")
 
-    const file = `${entry.id}-${entry.version}${EXTENSIONS[entry.kind] ?? '.apexpack'}`
+    const file = `${entry.id}-${entry.version}${EXTENSIONS[entry.kind] ?? '.atelierpack'}`
     const inRepo = typeof entry.url === 'string' && entry.url.startsWith(BASE)
     let data
     if (inRepo) {
@@ -208,7 +208,7 @@ export async function checkIndex({ dir = '.', base = null, external = 'changed',
       return fail(where, `can't be opened: ${err.message}`)
     }
     const { files, manifest: m, signature } = archive
-    if (m?.format !== 'apex-pack') return fail(where, 'apex-pack.json is not an Apex pack manifest')
+    if (m?.format !== 'atelier-pack') return fail(where, 'atelier-pack.json is not an Atelier pack manifest')
     if (m.id !== entry.id || m.version !== entry.version) fail(where, `the manifest says ${m.id} ${m.version}`)
     if (m.name !== entry.name || (m.description ?? '') !== (entry.description ?? '')) fail(where, 'name or description differs from the manifest (run npm run index)')
     if ((m.author?.name ?? undefined) !== entry.author) fail(where, 'author differs from the manifest (run npm run index)')

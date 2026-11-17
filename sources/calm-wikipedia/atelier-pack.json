@@ -1,12 +1,12 @@
 {
-  "format": "apex-pack",
+  "format": "atelier-pack",
   "manifestVersion": 1,
   "id": "calm-wikipedia",
   "name": "Calm Wikipedia",
   "version": "1.0.0",
   "description": "Easier reading on Wikipedia: a narrower text column, more space between lines and no fundraising banners.",
-  "author": { "name": "Apex community" },
-  "homepage": "https://github.com/3SENN/apex-packs",
+  "author": { "name": "Atelier community" },
+  "homepage": "https://github.com/3SENN/atelier-packs",
   "contributes": {
     "boosts": [{ "id": "reading", "match": ["wikipedia.org"], "subdomains": true, "css": "boosts/reading.css" }]
   },

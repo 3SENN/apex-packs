@@ -1,8 +1,8 @@
 {
-  "name": "apex-packs",
+  "name": "atelier-packs",
   "private": true,
   "type": "module",
-  "description": "The Apex community pack index.",
+  "description": "The Atelier community pack index.",
   "license": "MIT",
   "engines": {
     "node": ">=22"
